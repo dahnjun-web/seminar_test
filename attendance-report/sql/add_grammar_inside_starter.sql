@@ -2,7 +2,10 @@
 -- 교재 추가: 그래머 인사이드 스타터 (중등 문법) — 목차 37단계
 --
 --   Supabase → SQL Editor 에 이 파일 전체를 붙여넣고 Run 하면 교재·목차가 들어갑니다.
---   (화면으로 넣고 싶으면 /books.html → + 교재 추가 → 목차 칸에 「코드 | 제목」 붙여넣기)
+--   (화면으로 넣고 싶으면 /books.html → + 교재 추가 → 목차 칸에 「코드 | 제목 | 집과제」 붙여넣기)
+--
+--   · CH 단원마다 집과제 「워크북 CH○-○ 풀기」 가 들어 있습니다.
+--     진도가 그 단원에 닿는 날 그 학생 학생앱에 과제가 저절로 생깁니다.
 --
 --   · 맨 앞 「기초 | Grammar Basics」 는 교재 앞쪽의 기초 문법 단원입니다.
 --     건너뛸 거면 /books.html 에서 그 줄만 지우고 저장하세요.
@@ -14,42 +17,42 @@
 insert into textbooks (subject, name, step, units) values
   ('문법', '그래머 인사이드 스타터', 1, '[
     {"code": "기초", "title": "Grammar Basics"},
-    {"code": "CH1-1", "title": "셀 수 있는 명사"},
-    {"code": "CH1-2", "title": "셀 수 없는 명사"},
-    {"code": "CH1-3", "title": "관사"},
-    {"code": "CH2-1", "title": "인칭대명사"},
-    {"code": "CH2-2", "title": "this, that, it"},
-    {"code": "CH3-1", "title": "be동사의 현재형 1"},
-    {"code": "CH3-2", "title": "be동사의 현재형 2"},
-    {"code": "CH3-3", "title": "be동사의 과거형"},
-    {"code": "CH3-4", "title": "There is/are"},
-    {"code": "CH4-1", "title": "일반동사의 현재형 1"},
-    {"code": "CH4-2", "title": "일반동사의 현재형 2"},
-    {"code": "CH4-3", "title": "일반동사의 과거형 1"},
-    {"code": "CH4-4", "title": "일반동사의 과거형 2"},
-    {"code": "CH5-1", "title": "형용사"},
-    {"code": "CH5-2", "title": "부사"},
-    {"code": "CH6-1", "title": "장소를 나타내는 전치사"},
-    {"code": "CH6-2", "title": "시간을 나타내는 전치사"},
-    {"code": "CH7-1", "title": "동사의 종류 1"},
-    {"code": "CH7-2", "title": "동사의 종류 2"},
-    {"code": "CH8-1", "title": "can, may"},
-    {"code": "CH8-2", "title": "must, have to"},
-    {"code": "CH9-1", "title": "일반동사의 현재진행형 1"},
-    {"code": "CH9-2", "title": "일반동사의 현재진행형 2"},
-    {"code": "CH9-3", "title": "일반동사의 미래형 1"},
-    {"code": "CH9-4", "title": "일반동사의 미래형 2"},
-    {"code": "CH10-1", "title": "비교급"},
-    {"code": "CH10-2", "title": "최상급"},
-    {"code": "CH11-1", "title": "명사처럼 쓰는 to부정사"},
-    {"code": "CH11-2", "title": "형용사, 부사처럼 쓰는 to부정사"},
-    {"code": "CH12-1", "title": "and, but, or"},
-    {"code": "CH12-2", "title": "when, before, after, because"},
-    {"code": "CH13-1", "title": "who, what"},
-    {"code": "CH13-2", "title": "when, where, why"},
-    {"code": "CH13-3", "title": "how"},
-    {"code": "CH13-4", "title": "부가의문문"},
-    {"code": "CH13-5", "title": "명령문, 감탄문"}
+    {"code": "CH1-1", "title": "셀 수 있는 명사", "집과제": ["워크북 CH1-1 풀기"]},
+    {"code": "CH1-2", "title": "셀 수 없는 명사", "집과제": ["워크북 CH1-2 풀기"]},
+    {"code": "CH1-3", "title": "관사", "집과제": ["워크북 CH1-3 풀기"]},
+    {"code": "CH2-1", "title": "인칭대명사", "집과제": ["워크북 CH2-1 풀기"]},
+    {"code": "CH2-2", "title": "this, that, it", "집과제": ["워크북 CH2-2 풀기"]},
+    {"code": "CH3-1", "title": "be동사의 현재형 1", "집과제": ["워크북 CH3-1 풀기"]},
+    {"code": "CH3-2", "title": "be동사의 현재형 2", "집과제": ["워크북 CH3-2 풀기"]},
+    {"code": "CH3-3", "title": "be동사의 과거형", "집과제": ["워크북 CH3-3 풀기"]},
+    {"code": "CH3-4", "title": "There is/are", "집과제": ["워크북 CH3-4 풀기"]},
+    {"code": "CH4-1", "title": "일반동사의 현재형 1", "집과제": ["워크북 CH4-1 풀기"]},
+    {"code": "CH4-2", "title": "일반동사의 현재형 2", "집과제": ["워크북 CH4-2 풀기"]},
+    {"code": "CH4-3", "title": "일반동사의 과거형 1", "집과제": ["워크북 CH4-3 풀기"]},
+    {"code": "CH4-4", "title": "일반동사의 과거형 2", "집과제": ["워크북 CH4-4 풀기"]},
+    {"code": "CH5-1", "title": "형용사", "집과제": ["워크북 CH5-1 풀기"]},
+    {"code": "CH5-2", "title": "부사", "집과제": ["워크북 CH5-2 풀기"]},
+    {"code": "CH6-1", "title": "장소를 나타내는 전치사", "집과제": ["워크북 CH6-1 풀기"]},
+    {"code": "CH6-2", "title": "시간을 나타내는 전치사", "집과제": ["워크북 CH6-2 풀기"]},
+    {"code": "CH7-1", "title": "동사의 종류 1", "집과제": ["워크북 CH7-1 풀기"]},
+    {"code": "CH7-2", "title": "동사의 종류 2", "집과제": ["워크북 CH7-2 풀기"]},
+    {"code": "CH8-1", "title": "can, may", "집과제": ["워크북 CH8-1 풀기"]},
+    {"code": "CH8-2", "title": "must, have to", "집과제": ["워크북 CH8-2 풀기"]},
+    {"code": "CH9-1", "title": "일반동사의 현재진행형 1", "집과제": ["워크북 CH9-1 풀기"]},
+    {"code": "CH9-2", "title": "일반동사의 현재진행형 2", "집과제": ["워크북 CH9-2 풀기"]},
+    {"code": "CH9-3", "title": "일반동사의 미래형 1", "집과제": ["워크북 CH9-3 풀기"]},
+    {"code": "CH9-4", "title": "일반동사의 미래형 2", "집과제": ["워크북 CH9-4 풀기"]},
+    {"code": "CH10-1", "title": "비교급", "집과제": ["워크북 CH10-1 풀기"]},
+    {"code": "CH10-2", "title": "최상급", "집과제": ["워크북 CH10-2 풀기"]},
+    {"code": "CH11-1", "title": "명사처럼 쓰는 to부정사", "집과제": ["워크북 CH11-1 풀기"]},
+    {"code": "CH11-2", "title": "형용사, 부사처럼 쓰는 to부정사", "집과제": ["워크북 CH11-2 풀기"]},
+    {"code": "CH12-1", "title": "and, but, or", "집과제": ["워크북 CH12-1 풀기"]},
+    {"code": "CH12-2", "title": "when, before, after, because", "집과제": ["워크북 CH12-2 풀기"]},
+    {"code": "CH13-1", "title": "who, what", "집과제": ["워크북 CH13-1 풀기"]},
+    {"code": "CH13-2", "title": "when, where, why", "집과제": ["워크북 CH13-2 풀기"]},
+    {"code": "CH13-3", "title": "how", "집과제": ["워크북 CH13-3 풀기"]},
+    {"code": "CH13-4", "title": "부가의문문", "집과제": ["워크북 CH13-4 풀기"]},
+    {"code": "CH13-5", "title": "명령문, 감탄문", "집과제": ["워크북 CH13-5 풀기"]}
   ]'::jsonb)
 on conflict (name) do update
   set subject = excluded.subject,
