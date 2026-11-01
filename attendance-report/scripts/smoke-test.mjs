@@ -89,8 +89,8 @@ globalThis.fetch = async (url, opts = {}) => {
   throw new Error("unhandled " + method);
 };
 
-const student = (await import("/home/user/seminar-materials/attendance-report/api/student.js")).default;
-const attendance = (await import("/home/user/seminar-materials/attendance-report/api/attendance.js")).default;
+const student = (await import("../api/student.js")).default;
+const attendance = (await import("../api/attendance.js")).default;
 
 function mkRes() {
   const r = { code: 0, body: null };
@@ -172,7 +172,7 @@ check("선생님 화면에 완료 1건", r.body.tasks.filter((t) => t.done).leng
 // 2차 수강생은 진도를 손으로 써왔다. 글자가 목차와 정확히 같을 일이 거의 없어서
 // 여기서 못 찾으면 진도가 영영 안 넘어간다(= 6차의 간판 기능이 그 사람에겐 안 됨).
 {
-  const { findUnitIndex, advanceProgress, linkStatus } = await import("/home/user/seminar-materials/attendance-report/lib/progress.js");
+  const { findUnitIndex, advanceProgress, linkStatus } = await import("../lib/progress.js");
   const units = [
     { code: "Unit 1", title: "be동사" },
     { code: "Unit 5", title: "현재완료" },
