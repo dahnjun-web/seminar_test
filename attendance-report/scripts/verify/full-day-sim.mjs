@@ -439,11 +439,15 @@ ck("재시 안내는 통과 기준(%)을 알려준다", typeof 재시2.d.pass ==
 // ───────────────────────────────────────────────────────── 8. 하원
 마디("8. 하원 — 아이가 집에 간다");
 
-const 하원키오스크 = await POST("/api/attendance", { action: "checkin", code: 정시.student_code, pin: 정시.pin });
-ck("★ 키오스크를 두 번째로 누르면 하원이 된다", 하원키오스크.s === 200 && /하원|out/i.test(JSON.stringify(하원키오스크.d)), 하원키오스크.d);
-줄(`→ ${하원키오스크.d.kind || ""} ${하원키오스크.d.time || ""}`);
+// 키오스크는 **등원 전용** — 아이가 또 눌러도 하원이 되지 않는다 (하원은 현황판에서)
+const 다시터치 = await POST("/api/attendance", { action: "checkin", code: 정시.student_code, pin: 정시.pin });
+ck("★ 키오스크를 두 번째로 눌러도 하원이 되지 않는다 (이미 등원)", 다시터치.s === 200 && 다시터치.d.mode === "already", 다시터치.d);
+줄(`→ ${다시터치.d.mode || ""} ${다시터치.d.time || ""}`);
 행들 = await 행보기();
-ck("하원 시각이 저장돼 있다", Boolean(행들.find((r) => r.student_id === 정시.id)?.record?.check_out));
+ck("키오스크로는 하원 시각이 찍히지 않는다", !행들.find((r) => r.student_id === 정시.id)?.record?.check_out);
+const 판하원정시 = await POST("/api/attendance", { action: "checkout", student_id: 정시.id, date: 오늘 });
+ck("★ 하원은 현황판 「하원 처리」로 한다 — 시각이 저장된다",
+   판하원정시.s === 200 && Boolean((await 행보기()).find((r) => r.student_id === 정시.id)?.record?.check_out), 판하원정시.d);
 
 // 현황판에서 하원 처리 (카톡은 안 감)
 const 판하원 = await POST("/api/attendance", { action: "checkout", student_id: 지각할아이.id, date: 오늘 });

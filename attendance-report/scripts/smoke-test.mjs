@@ -441,6 +441,21 @@ check("삭제 반영 (1건 남음)", r.body.tasks.length === 1, r.body.tasks);
   check("엉뚱한 기간은 기본 30일로", h.body?.days === 30, h.body?.days);
 }
 
+// ── 키오스크는 등원 전용 — 두 번째 터치가 하원이 되면 안 됨 ─────────
+//   예전엔 두 번째 터치 = 하원이라, 아이가 연달아 누르면 등원 직후 하원 카톡이 갔습니다.
+{
+  const k1 = await POST(attendance, { action: "checkin", pin: "3333" });
+  check("키오스크 첫 터치 = 등원", k1.code === 200 && k1.body?.mode === "in", k1.body);
+  const k2 = await POST(attendance, { action: "checkin", pin: "3333" });
+  check("★ 두 번째 터치 = 이미 등원 (하원으로 안 바뀜)",
+        k2.code === 200 && k2.body?.mode === "already" && k2.body?.time === k1.body?.time, k2.body);
+  const row = T.daily_records.find((x) => x.student_id === "s2" && x.date === today);
+  check("★ 키오스크로는 하원 시각이 찍히지 않는다", Boolean(row?.check_in) && !row?.check_out, row);
+  await POST(attendance, { action: "checkout", student_id: "s2" });
+  const k3 = await POST(attendance, { action: "checkin", pin: "3333" });
+  check("현황판 하원 처리 뒤 또 누르면 '이미 하원'", k3.body?.mode === "done", k3.body);
+}
+
 console.log(fail ? `\n❌ 실패 ${fail}건` : "\n✅ 전부 통과");
 process.exit(fail ? 1 : 0);
 

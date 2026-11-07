@@ -95,7 +95,7 @@ console.log("\n── 3. 방금 등록한 학생으로 키오스크 ──");
   const onBoard = (board.d.students || []).find((x) => x.name === "검수학생");
   ck("현황판에 뜬다", Boolean(onBoard), board.d.stats);
   const outR = await post("/api/attendance", { action: "checkin", pin: "9911" });
-  ck("한 번 더 누르면 하원 처리된다", outR.d.mode === "out", outR.d);
+  ck("★ 한 번 더 눌러도 하원이 안 된다 (키오스크는 등원 전용)", outR.d.mode === "already", outR.d);
 }
 
 // ── 4. 진도를 손으로 고치면 다음 수업일이 이어지나 ──────────
