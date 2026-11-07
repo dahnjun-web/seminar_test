@@ -12,7 +12,7 @@ const 지난달 = (() => { const d = new Date(Date.now() + 9 * 3600 * 1000); d.s
 const students=(await get("/api/attendance","action=students")).d.students.sort((a,b)=>a.name.localeCompare(b.name));
 console.log(`학생 ${students.length}명 · 지난달 ${지난달}\n`);
 
-// ── 1. 출결 — 키오스크 세 번 터치 (등원 → 하원 → 이미 하원)
+// ── 1. 출결 — 키오스크 등원(등원 전용) → 현황판 하원 → 이미 하원
 console.log("── 출결 (키오스크) ──");
 const 출결 = [];
 for (const s of students.slice(0,6)) {   // 앞 6명은 등·하원까지
@@ -24,10 +24,14 @@ for (const s of students.slice(0,6)) {   // 앞 6명은 등·하원까지
   const 상태1=me?.status;
 
   const b2=await post("/api/attendance",{action:"checkin",pin:s.pin});
-  ck(`${s.name}: 두 번째 터치 = 하원`, b2.s===200, b2.d);
+  ck(`${s.name}: ★ 두 번째 터치는 하원이 아니다 (이미 등원)`, b2.s===200 && b2.d.mode==="already", b2.d);
   board=(await get("/api/attendance","action=board")).d;
   me=(board.students||[]).find(r=>r.name===s.name);
-  ck(`${s.name}: 현황판이 하원으로 바뀐다`, me?.status==="하원", me?.status);
+  ck(`${s.name}: 현황판 상태가 그대로다`, me?.status===상태1, me?.status);
+  const 판=await post("/api/attendance",{action:"checkout",student_id:me?.student_id});
+  board=(await get("/api/attendance","action=board")).d;
+  me=(board.students||[]).find(r=>r.name===s.name);
+  ck(`${s.name}: 현황판 「하원 처리」로 하원이 된다`, 판.s===200 && me?.status==="하원", me?.status);
 
   const c=await post("/api/attendance",{action:"checkin",pin:s.pin});
   ck(`${s.name}: ★ 세 번째 터치는 토글이 아니다 (다시 등원 안 됨)`,

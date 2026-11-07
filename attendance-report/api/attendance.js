@@ -11,7 +11,7 @@
 //   POST {action:"save-student", student}     → 학생 추가/수정
 //   POST {action:"delete-student", id}        → 학생 삭제
 //   POST {action:"bulk-students", rows:[...]} → 붙여넣기 일괄 등록
-//   POST {action:"checkin", pin}              → PIN 등원/하원 토글 (키오스크)
+//   POST {action:"checkin", pin}              → PIN 등원 (키오스크 · 등원 전용, 다시 눌러도 하원 안 됨)
 //   POST {action:"checkout", student_id}      → 하원 처리 (현황판, 카톡 안 보냄)
 //   POST {action:"save-record", student_id, date, fields} → 데일리 리포트 한 줄 저장
 //   POST {action:"advance-today"}             → 오늘 진도를 목차 다음으로 일괄 채우기
@@ -615,18 +615,15 @@ export default async function handler(req, res) {
       }
 
       const row = await ensureTodayRow(student.id, now.date);
-      if (row.check_in && !row.check_out) {
-        // 이미 등원 → 하원 처리
-        const upd = (await patch("daily_records", `id=eq.${row.id}`, { check_out: now.hhmm }))[0];
-        // 학부모 하원 알림톡 (미설정이면 조용히 skip) — 키오스크 하원에서만 발송.
-        // 현황판 하원(action=checkout)은 실사용과 동일하게 카톡을 보내지 않는다.
-        await sendAlimtalk(student.phone, TPL.checkout, {
-          "#{학생이름}": student.name, "#{하원시간}": upd.check_out,
-        });
-        return res.status(200).json({ mode: "out", name: student.name, grade: student.grade, time: upd.check_out, check_in: row.check_in });
-      }
+      // ★ 키오스크는 **등원 전용** — 한 번 누르면 그날 출결은 끝입니다.
+      //   다시 눌러도 하원으로 바뀌지 않고 「이미 등원」만 보여줍니다 (카톡도 안 나감).
+      //   예전에는 두 번째 터치가 하원이어서, 아이가 장난으로 연달아 누르면
+      //   등원 직후에 하원 카톡이 집으로 갔습니다. 하원은 현황판 「하원 처리」로만 합니다.
       if (row.check_out) {
         return res.status(200).json({ mode: "done", name: student.name, grade: student.grade, time: row.check_out });
+      }
+      if (row.check_in) {
+        return res.status(200).json({ mode: "already", name: student.name, grade: student.grade, time: row.check_in, lateness: row.lateness });
       }
       // 등원 처리
       const scheduled = (student.schedule || {})[now.weekday] || "";

@@ -108,7 +108,7 @@ ck("save-record 반영됨", r.d.rows.find((x) => x.name === "김민준")?.record
 r = await post("/api/attendance", { action: "checkin", pin: byName["김민준"].pin });
 ck("키오스크 등원", r.s === 200 && r.d.mode === "in", r.d);
 r = await post("/api/attendance", { action: "checkin", pin: byName["김민준"].pin });
-ck("키오스크 두 번째 터치 = 하원", r.s === 200 && r.d.mode === "out", r.d);
+ck("★ 키오스크 두 번째 터치 = 이미 등원 (하원으로 안 바뀜)", r.s === 200 && r.d.mode === "already", r.d);
 r = await post("/api/attendance", { action: "checkin", pin: "0000" });
 ck("없는 PIN 은 거절", r.s >= 400 || r.d.error, r.d);
 

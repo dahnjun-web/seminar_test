@@ -123,12 +123,13 @@ function showResult(d){
     $('rAction').textContent = '등원 완료';
     $('rSub').textContent = d.expected_end ? ('예상 하원 ' + d.expected_end) : '';
     if (late) $('rLate').innerHTML = '<div class="late-tag">지각 등원</div>';
-  } else if (d.mode === 'out') {
-    card.className = 'rcard checkout';
-    $('rIcon').textContent = '👋';
-    $('rAction').textContent = '하원 완료';
-    $('rSub').textContent = d.check_in ? ('등원 ' + d.check_in) : '';
-  } else { // done
+  } else if (d.mode === 'already') { // 이미 등원한 날 또 누름 — 아무것도 안 바뀜
+    card.className = 'rcard ' + (late ? 'late' : 'checkin');
+    $('rIcon').textContent = '✅';
+    $('rAction').textContent = '이미 등원했어요';
+    $('rSub').textContent = d.time ? ('등원 ' + d.time) : '';
+    if (late) $('rLate').innerHTML = '<div class="late-tag">지각 등원</div>';
+  } else { // done — 현황판에서 하원 처리된 뒤 또 누름
     card.className = 'rcard checkout';
     $('rIcon').textContent = '✔️';
     $('rAction').textContent = '이미 하원 처리됨';

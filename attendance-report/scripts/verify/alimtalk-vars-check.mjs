@@ -96,8 +96,8 @@ if (!stu) { console.log("❌ 샘플 학생이 없습니다 — setup.sql 을 먼
 const 요일 = ["일","월","화","수","목","금","토"][new Date(`${KST}T00:00:00Z`).getUTCDay()];
 await call(attendance, { action: "save-student", student: { ...stu, schedule: { ...(stu.schedule||{}), [요일]: "00:01" } } });
 await call(attendance, { action: "notify-absent", date: KST });
-// 등원·하원 (키오스크 두 번 터치) → TPL_CHECKIN / TPL_CHECKOUT
-await call(attendance, { action: "checkin", pin: stu.pin });
+// 등원 (키오스크 — 등원 전용, 다시 눌러도 아무것도 안 나감) → TPL_CHECKIN
+//   하원 알림톡(TPL_CHECKOUT)은 이제 어디서도 안 보냅니다 — 아래 대조에서 건너뜁니다.
 await call(attendance, { action: "checkin", pin: stu.pin });
 // 데일리 리포트 → TPL_DAILY
 await call(attendance, { action: "save-record", student_id: stu.id, date: KST, fields: { voca_test: "불통과", voca_score: "5/20" } });
@@ -118,6 +118,7 @@ if (!자료들) {
 }
 for (const [tpl, { 이름, 변수 }] of Object.entries(자료들)) {
   const 보낸것 = 나간것[tpl];
+  if (tpl === "TPL_CHECKOUT") { console.log(`\nℹ️ ${이름} (${tpl}) — 키오스크가 등원 전용이 되어 앱이 보내지 않습니다 (템플릿 없어도 됩니다)`); continue; }
   if (!보낸것) { fail++; console.log(`\n❌ ${이름} (${tpl}) — 앱이 **한 번도 안 보냈습니다** (발송 지점을 못 탔습니다)`); continue; }
   const 빠진것 = [...변수].filter((v) => !보낸것.has(v));          // 템플릿엔 있는데 앱이 안 보냄 → 빈 칸
   const 남는것 = [...보낸것].filter((v) => !변수.has(v));          // 앱은 보내는데 템플릿엔 없음 → 무시됨(괜찮음)
