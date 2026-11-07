@@ -31,7 +31,7 @@ for (const s of students.slice(0,6)) {   // 앞 6명은 등·하원까지
   const 판=await post("/api/attendance",{action:"checkout",student_id:me?.student_id});
   board=(await get("/api/attendance","action=board")).d;
   me=(board.students||[]).find(r=>r.name===s.name);
-  ck(`${s.name}: 현황판 「하원 처리」로 하원이 된다`, 판.s===200 && me?.status==="하원", me?.status);
+  ck(`${s.name}: checkout API 로 하원 상태가 된다 (화면 버튼은 없음)`, 판.s===200 && me?.status==="하원", me?.status);
 
   const c=await post("/api/attendance",{action:"checkin",pin:s.pin});
   ck(`${s.name}: ★ 세 번째 터치는 토글이 아니다 (다시 등원 안 됨)`,

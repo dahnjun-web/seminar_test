@@ -6,12 +6,12 @@
 
 ## 이 앱이 하는 일 (핵심 3기능)
 - **데일리 리포트** `daily.html` — 오늘 등원을 판단해 다음 진도를 적용한 리포트를 생성 → 진도·태도·과제·단어테스트 작성(자동 저장) → 📨 학부모 카톡 발송
-- **출석 현황판** `board.html` — 등원·곧 하원·하원·미등원 실시간, 하원 처리(카톡 X), 미등원 알림톡(수동)
+- **출석 현황판** `board.html` — 등원·곧 하원·하원·미등원 실시간, 미등원 알림톡(수동). **하원 버튼 없음** — 등원+수업시간이 지나면 자동으로 하원
 - **월말평가서** `report.html`+`api/report.js` — 통계 집계 + Claude로 평가서 생성 → 학부모는 토큰 링크(`parent.html`)로 열람
 - **선생님앱** `teacher.html` — 내 담당 학생만 현황판 + 과제 내주기(오늘 진도로 자동 채우기) + 체크 현황
 - **학생앱** `student.html`+`api/student.js` — 학생이 폰으로 로그인(학생ID+출결PIN) → 오늘 과제 체크 · 내 진도 · 최근 수업기록 · 월말평가서
 - **학생 카드** `student_card.html`+`api/attendance.js`(`student-history`) — 한 학생의 지난 진도·테스트·과제를 1주/1달/3달로 (과목별 흐름 + 날짜별 표)
-- (받침) 키오스크 PIN 등원(등원 전용 · 하원은 현황판) / 교재 목차 → 진도 자동 전환 / 새벽 cron 행 생성
+- (받침) 키오스크 PIN 등원(등원 전용 · 하원은 안 찍음) / 교재 목차 → 진도 자동 전환 / 새벽 cron 행 생성
 
 ## 건드리면 안 되는 것 (★)
 - **service_role 키를 브라우저(public/)로 내보내지 말 것.** DB 접근은 `api/*.js`(서버)에서만.
@@ -52,7 +52,7 @@
 ## 알림톡(솔라피) — 메이크 없이 Vercel에서 직접
 `lib/solapi.js` 가 HMAC 서명 + send-many 호출을 담당. 미설정이면 조용히 skip(다른 기능 영향 없음).
 
-발송 지점: 등원(`checkin` — 키오스크는 **등원 전용**, 다시 눌러도 하원 안 됨) · **하원 알림톡은 지금 안 나감**(하원은 현황판 `checkout` 뿐이고 카톡 안 보냄 — `TPL_CHECKOUT` 은 비워둬도 됨) · 미등원(`notify-absent`, 수동) · 데일리 리포트(`send-daily`) · **재시 안내(`send-retest`, 수동)** · 월말평가서(report.js `send`).
+발송 지점: 등원(`checkin` — 키오스크는 **등원 전용**, 다시 눌러도 하원 안 됨) · **하원 알림톡은 안 나감**(하원은 찍지 않음 — 수업시간이 지나면 현황판이 자동으로 하원으로 봄 · `TPL_CHECKOUT` 은 비워둬도 됨) · 미등원(`notify-absent`, 수동) · 데일리 리포트(`send-daily`) · **재시 안내(`send-retest`, 수동)** · 월말평가서(report.js `send`).
 템플릿 ID는 환경변수 `TPL_CHECKIN`/`TPL_CHECKOUT`/`TPL_LATE`/`TPL_DAILY`/`TPL_REPORT`/`TPL_RETEST`(재시 안내).
 
 ## 과제(tasks) 와 과제등급(homework) 은 다른 것 ★

@@ -129,7 +129,7 @@ function showResult(d){
     $('rAction').textContent = '이미 등원했어요';
     $('rSub').textContent = d.time ? ('등원 ' + d.time) : '';
     if (late) $('rLate').innerHTML = '<div class="late-tag">지각 등원</div>';
-  } else { // done — 현황판에서 하원 처리된 뒤 또 누름
+  } else { // done — (옛 데이터) 하원 시각이 적힌 뒤 또 누름
     card.className = 'rcard checkout';
     $('rIcon').textContent = '✔️';
     $('rAction').textContent = '이미 하원 처리됨';

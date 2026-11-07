@@ -218,7 +218,7 @@ table.tb code{font-family:'Space Mono',monospace;font-size:12.5px;color:#155e57;
   <div class="two-col">
     <div class="card"><div class="card-title"><div class="num">1</div> 데일리 리포트 (작성·보내기)</div><p>학생별로 <b>진도·태도·과제·단어테스트</b>를 작성. 진도는 <b>교재 목차의 다음으로 자동 전환</b>(바뀐 날만 수정) → 완료되면 <b>학부모에게 카톡 발송</b>.</p></div>
     <div class="card"><div class="card-title"><div class="num">2</div> 출결 키오스크</div><p>학생이 <b>PIN 4자리</b>만 누르면 등원/하원 자동 기록. 예정 시간보다 늦으면 지각 자동 판정.</p></div>
-    <div class="card"><div class="card-title"><div class="num">3</div> 출결 현황판</div><p>오늘 누가 왔고(등원·곧 하원·하원), 안 왔는지(미등원) <b>실시간</b>. 카드 터치로 하원 처리·미등원 알림톡.</p></div>
+    <div class="card"><div class="card-title"><div class="num">3</div> 출결 현황판</div><p>오늘 누가 왔고(등원·곧 하원·하원), 안 왔는지(미등원) <b>실시간</b>. 하원은 수업시간이 지나면 자동. 카드 터치로 미등원 알림톡.</p></div>
     <div class="card"><div class="card-title"><div class="num">4</div> 월말평가서 (AI)</div><p>월 선택 → 통계 자동 집계 → <b>클로드가 평가서 본문 작성</b> → 수정 → 저장 → 학부모 링크.</p></div>
     <div class="card"><div class="card-title"><div class="num">5</div> 선생님앱</div><p><b>내 담당 학생만</b> 보이는 현황판 + <b>과제 내주기</b>. 「진도로 채우기」를 누르면 오늘 진도가 과제 제목에 자동으로 들어갑니다.</p></div>
     <div class="card"><div class="card-title"><div class="num">6</div> 학생앱</div><p>학생이 <b>폰으로</b> 들어와 오늘 과제를 체크. 내 진도·최근 수업기록·월말평가서도 봅니다. 로그인은 <b>학생ID + 출결번호</b>(키오스크 번호 그대로).</p></div>
@@ -407,7 +407,7 @@ CH1-2 | 일반동사 | 워크북 CH1-2, 단어 30개 | 본문 2회 읽기
     <p><code>/kiosk.html</code> — 학원 태블릿/PC에 띄워두는 화면.</p>
     <ul class="step-list">
       <li>학생이 <b>PIN 4자리</b> 누르고 <b>확인</b> → 등원 기록 (예정보다 늦으면 "지각" 표시).</li>
-      <li>같은 PIN을 <b>한 번 더</b> 누르면 하원 처리.</li>
+      <li>같은 PIN을 <b>한 번 더</b> 눌러도 아무것도 안 바뀝니다 (등원 전용 · 하원은 안 찍음).</li>
       <li>샘플 PIN: 김민준 <b>1111</b> · 이서연 <b>2222</b> · 박도윤 <b>3333</b>.</li>
     </ul>
     <div class="hl-box teal"><strong>💡 지각 기준</strong> 요일별 등원시간 + 10분(유예)을 넘으면 지각. 유예를 바꾸고 싶으면 → 바이브코딩 파트 참고.</div>
@@ -417,7 +417,7 @@ CH1-2 | 일반동사 | 워크북 CH1-2, 단어 30개 | 본문 2회 읽기
   <div class="card">
     <p><b>출결 현황판</b> <code>/board.html</code> — 오늘 <b>등원 · 곧 하원 · 하원 · 미등원</b>이 상단 요약과 카드로 한눈에.</p>
     <ul class="step-list">
-      <li>학생 카드를 <b>터치</b> → 지각/결석 정정, <b>하원 처리</b>(현황판 하원은 카톡을 보내지 않아요).</li>
+      <li>학생 카드를 <b>터치</b> → 지각/결석 정정. (하원 버튼은 없어요 — 수업시간이 지나면 저절로 하원으로 보여요.)</li>
       <li>상단 <b>미등원 학부모 알림톡</b> 버튼으로 안 온 학생 보호자에게 한 번에 안내(알림톡 설정 시, 수동).</li>
     </ul>
   </div>

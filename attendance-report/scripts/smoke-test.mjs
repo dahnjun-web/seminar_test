@@ -453,7 +453,33 @@ check("삭제 반영 (1건 남음)", r.body.tasks.length === 1, r.body.tasks);
   check("★ 키오스크로는 하원 시각이 찍히지 않는다", Boolean(row?.check_in) && !row?.check_out, row);
   await POST(attendance, { action: "checkout", student_id: "s2" });
   const k3 = await POST(attendance, { action: "checkin", pin: "3333" });
-  check("현황판 하원 처리 뒤 또 누르면 '이미 하원'", k3.body?.mode === "done", k3.body);
+  check("(옛 데이터) 하원 시각이 있으면 또 눌러도 '이미 하원'", k3.body?.mode === "done", k3.body);
+}
+
+// ── 하원은 안 찍는다 — 등원 + 수업시간이 지나면 현황판이 저절로 「하원」 ─────
+//   하원 버튼이 없으므로 서버가 시간으로 판정해야 합니다. 안 그러면 모두 종일 「수업중」.
+//   (00:00 KST 그 1분 동안 돌리면 첫 점검이 「곧 하원」으로 나올 수 있습니다 — 재실행하세요)
+{
+  const nowH = new Date(Date.now() + 9 * 3600e3).toISOString().slice(11, 16);
+  T.students.push(
+    { id: "s4", name: "끝난아이", student_code: "demo04", pin: "4444", teacher: "이선생", class_minutes: 1, status: "재원", schedule: EVERYDAY("00:00"), books: {} },
+    { id: "s5", name: "곧끝날아이", student_code: "demo05", pin: "5555", teacher: "이선생", class_minutes: 10, status: "재원", schedule: EVERYDAY(nowH), books: {} },
+  );
+  T.daily_records.push(
+    { id: nextId(), student_id: "s4", date: today, check_in: "00:00", lateness: "정시" },
+    { id: nextId(), student_id: "s5", date: today, check_in: nowH, lateness: "정시" },
+    { id: nextId(), student_id: "s4", date: "2026-01-05", check_in: "17:00", lateness: "정시" },
+  );
+  let b = await GET(attendance, { action: "board" });
+  const 끝 = b.body.students?.find((x) => x.student_id === "s4");
+  const 곧 = b.body.students?.find((x) => x.student_id === "s5");
+  check("★ 하원 버튼 없이도 수업시간이 지나면 「하원」", 끝?.status === "하원" && !끝?.record?.check_out, 끝);
+  check("하원 칸에 보여줄 예상 하원 시각이 있다", 끝?.expected_end === "00:01", 끝?.expected_end);
+  check("끝나기 15분 전부터는 「곧 하원」", 곧?.status === "곧 하원", 곧?.status);
+  check("하원 완료 집계에 들어간다", (b.body.stats?.하원완료 || 0) >= 1, b.body.stats);
+  b = await GET(attendance, { action: "board", date: "2026-01-05" });
+  const 지난날 = b.body.students?.find((x) => x.student_id === "s4");
+  check("★ 지난 날짜는 전부 「하원」 (종일 수업중으로 남지 않음)", 지난날?.status === "하원", 지난날?.status);
 }
 
 console.log(fail ? `\n❌ 실패 ${fail}건` : "\n✅ 전부 통과");

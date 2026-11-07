@@ -12,7 +12,8 @@
 //   POST {action:"delete-student", id}        → 학생 삭제
 //   POST {action:"bulk-students", rows:[...]} → 붙여넣기 일괄 등록
 //   POST {action:"checkin", pin}              → PIN 등원 (키오스크 · 등원 전용, 다시 눌러도 하원 안 됨)
-//   POST {action:"checkout", student_id}      → 하원 처리 (현황판, 카톡 안 보냄)
+//   POST {action:"checkout", student_id}      → 하원 시각 기록 (화면 버튼은 없음 — 검수·옛 데이터 호환용.
+//                                                평소엔 등원+수업시간이 지나면 현황판이 저절로 하원으로 봄)
 //   POST {action:"save-record", student_id, date, fields} → 데일리 리포트 한 줄 저장
 //   POST {action:"advance-today"}             → 오늘 진도를 목차 다음으로 일괄 채우기
 //   POST {action:"notify-absent"}             → 미등원 학부모 알림톡 (수동)
@@ -243,8 +244,13 @@ export default async function handler(req, res) {
         if (rec?.check_out) status = "하원";
         else if (rec?.lateness === "결석") status = "결석";
         else if (rec?.check_in) {
+          // ★ 하원은 따로 찍지 않습니다 (키오스크 등원 전용 · 하원 버튼 없음).
+          //   등원 + 수업시간이 지나면 저절로 「하원」, 그 15분 전부터 「곧 하원」.
+          //   지난 날짜는 수업이 끝난 지 오래니 전부 「하원」.
           const endMin = toMinutes(expectedEnd);
-          status = isToday && endMin !== null && nowMin >= endMin - LEAVE_SOON ? "곧 하원" : "수업중";
+          if (!isToday || (endMin !== null && nowMin >= endMin)) status = "하원";
+          else if (endMin !== null && nowMin >= endMin - LEAVE_SOON) status = "곧 하원";
+          else status = "수업중";
         } else {
           // 아직 등원 전 — 예정시간+유예 지났으면 '지각 미등원', 아니면 '미등원'
           const overdue = scheduled && isToday && nowMin > toMinutes(scheduled) + GRACE;
@@ -618,7 +624,8 @@ export default async function handler(req, res) {
       // ★ 키오스크는 **등원 전용** — 한 번 누르면 그날 출결은 끝입니다.
       //   다시 눌러도 하원으로 바뀌지 않고 「이미 등원」만 보여줍니다 (카톡도 안 나감).
       //   예전에는 두 번째 터치가 하원이어서, 아이가 장난으로 연달아 누르면
-      //   등원 직후에 하원 카톡이 집으로 갔습니다. 하원은 현황판 「하원 처리」로만 합니다.
+      //   등원 직후에 하원 카톡이 집으로 갔습니다. 하원은 따로 찍지 않습니다 —
+      //   등원 + 수업시간이 지나면 현황판이 저절로 하원으로 봅니다.
       if (row.check_out) {
         return res.status(200).json({ mode: "done", name: student.name, grade: student.grade, time: row.check_out });
       }
@@ -645,7 +652,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // ── 현황판: 하원 처리 (실사용 현황판과 동일 — 카톡 안 보내고 시간만 기록) ──
+    // ── 하원 시각 기록 (화면에 버튼은 없음 — 검수·호환용. 카톡 안 보내고 시간만 기록) ──
     if (action === "checkout") {
       const { student_id } = req.body;
       const row = await ensureTodayRow(student_id, now.date);

@@ -151,7 +151,6 @@
     <textarea id="eNote" rows="2" placeholder="특이사항 (자세한 기록은 데일리 리포트에서)"></textarea>
     <div class="actions">
       <button class="primary" id="saveBtn">저장</button>
-      <button class="ghost" id="checkoutBtn">하원 처리</button>
       <button class="ghost" id="closeBtn">닫기</button>
     </div>
   </div>
@@ -266,12 +265,13 @@ function cardHtml(s){
   const arrived = s.status==="수업중" || s.status==="곧 하원" || s.status==="하원";
   let body;
   if (arrived){
+    // 하원은 따로 찍지 않습니다 — 등원 + 수업시간이 지나면 서버가 「하원」으로 봅니다 (버튼 없음)
     const endLabel = s.status==="하원" ? "하원" : "예상 하원";
-    const endVal = s.status==="하원" ? (r.check_out||"-") : (s.expected_end||"-");
+    const endVal = s.status==="하원" ? (r.check_out||s.expected_end||"-") : (s.expected_end||"-");
     body = `<div class="trow">
         <div class="tbox"><div class="k">등원</div><div class="v">${esc(r.check_in||"-")}</div></div>
         <div class="tbox"><div class="k">${endLabel}</div><div class="v${s.status==="곧 하원"?" warn":""}">${esc(endVal)}</div></div>
-      </div>` + (s.status!=="하원" ? `<button class="co-btn" onclick="event.stopPropagation();checkout('${s.student_id}')">하원 처리</button>` : "");
+      </div>`;
   } else if (s.status==="결석"){
     body = `<div class="statusline">결석 처리됨</div>`;
   } else {
@@ -289,11 +289,6 @@ function cardHtml(s){
   </div>`;
 }
 
-// 하원 처리 (카톡 안 보냄)
-window.checkout = async (id) => {
-  try { await api({ action:"checkout", student_id:id }); load(); }
-  catch(e){ alert(e.message); }
-};
 // 한 명 미등원 알림톡
 window.notifyOne = async (id, name, sched) => {
   if (!confirm(`${name} 학부모에게 미등원 알림톡을 보낼까요?`)) return;
@@ -322,10 +317,6 @@ document.querySelectorAll(".seg").forEach(seg =>
 $("#closeBtn").onclick = () => $("#overlay").classList.remove("on");
 $("#saveBtn").onclick = async () => {
   try { await api({ action:"save-record", student_id:current.student_id, fields:{ lateness:getSeg("lateness"), note:$("#eNote").value } }); $("#overlay").classList.remove("on"); load(); }
-  catch(e){ alert(e.message); }
-};
-$("#checkoutBtn").onclick = async () => {
-  try { await api({ action:"checkout", student_id:current.student_id }); $("#overlay").classList.remove("on"); load(); }
   catch(e){ alert(e.message); }
 };
 $("#reload").onclick = load;
